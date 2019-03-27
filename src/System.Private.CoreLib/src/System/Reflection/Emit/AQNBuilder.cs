@@ -2,12 +2,10 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using System;
+#nullable enable
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using System.Runtime.Versioning;
 using System.Runtime.InteropServices;
-using System.Security;
 
 namespace System.Reflection.Emit
 {
@@ -55,7 +53,7 @@ namespace System.Reflection.Emit
         #region Static Members
 
         // TypeNameBuilder is NOT thread safe NOR reliable
-        internal static string ToString(Type type, Format format)
+        internal static string? ToString(Type type, Format format)
         {
             if (format == Format.FullName || format == Format.AssemblyQualifiedName)
             {
@@ -109,13 +107,13 @@ namespace System.Reflection.Emit
 
             // Append namespace + nesting + name
             List<Type> nestings = new List<Type>();
-            for (Type t = rootType; t != null; t = t.IsGenericParameter ? null : t.DeclaringType)
+            for (Type? t = rootType; t != null; t = t.IsGenericParameter ? null : t.DeclaringType)
                 nestings.Add(t);
 
             for (int i = nestings.Count - 1; i >= 0; i--)
             {
                 Type enclosingType = nestings[i];
-                string name = enclosingType.Name;
+                string name = enclosingType.Name!;
 
                 if (i == nestings.Count - 1 && enclosingType.Namespace != null && enclosingType.Namespace.Length != 0)
                     name = enclosingType.Namespace + "." + name;
@@ -157,7 +155,7 @@ namespace System.Reflection.Emit
         private void AddSzArray() { AddSzArray(m_typeNameBuilder); }
         private void AddArray(int rank) { AddArray(m_typeNameBuilder, rank); }
         private void AddAssemblySpec(string assemblySpec) { AddAssemblySpec(m_typeNameBuilder, assemblySpec); }
-        public override string ToString() { string ret = null; ToString(m_typeNameBuilder, JitHelpers.GetStringHandleOnStack(ref ret)); return ret; }
+        public override string ToString() { string ret = null!; ToString(m_typeNameBuilder, JitHelpers.GetStringHandleOnStack(ref ret)); return ret; }
         private void Clear() { Clear(m_typeNameBuilder); }
         #endregion
     }

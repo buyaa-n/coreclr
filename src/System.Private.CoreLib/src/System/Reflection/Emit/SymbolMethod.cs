@@ -2,15 +2,11 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-// 
+#nullable enable
+using CultureInfo = System.Globalization.CultureInfo;
 
 namespace System.Reflection.Emit
 {
-    using System.Runtime.InteropServices;
-    using System;
-    using System.Reflection;
-    using CultureInfo = System.Globalization.CultureInfo;
-
     internal sealed class SymbolMethod : MethodInfo
     {
         #region Private Data Members
@@ -26,7 +22,7 @@ namespace System.Reflection.Emit
 
         #region Constructor
         internal SymbolMethod(ModuleBuilder mod, MethodToken token, Type arrayClass, string methodName,
-            CallingConventions callingConvention, Type returnType, Type[] parameterTypes)
+            CallingConventions callingConvention, Type? returnType, Type[]? parameterTypes)
         {
             // This is a kind of MethodInfo to represent methods for array type of unbaked type
 
@@ -38,7 +34,7 @@ namespace System.Reflection.Emit
             m_mdMethod = token;
 
             // The ParameterTypes are also a bit interesting in that they may be unbaked TypeBuilders.
-            m_returnType = returnType;
+            m_returnType = returnType!;
             if (parameterTypes != null)
             {
                 m_parameterTypes = new Type[parameterTypes.Length];
@@ -78,17 +74,17 @@ namespace System.Reflection.Emit
             get { return m_module; }
         }
 
-        public override Type ReflectedType
+        public override Type? ReflectedType
         {
             get { return m_containingType as Type; }
         }
 
-        public override string Name
+        public override string? Name
         {
             get { return m_name; }
         }
 
-        public override Type DeclaringType
+        public override Type? DeclaringType
         {
             get { return m_containingType; }
         }
@@ -123,7 +119,7 @@ namespace System.Reflection.Emit
         #endregion
 
         #region MethodInfo Overrides
-        public override Type ReturnType
+        public override Type? ReturnType
         {
             get
             {
@@ -131,12 +127,12 @@ namespace System.Reflection.Emit
             }
         }
 
-        public override ICustomAttributeProvider ReturnTypeCustomAttributes
+        public override ICustomAttributeProvider? ReturnTypeCustomAttributes
         {
             get { return null; }
         }
 
-        public override object Invoke(object obj, BindingFlags invokeAttr, Binder binder, object[] parameters, CultureInfo culture)
+        public override object Invoke(object? obj, BindingFlags invokeAttr, Binder? binder, object?[]? parameters, CultureInfo? culture)
         {
             throw new NotSupportedException(SR.NotSupported_SymbolMethod);
         }

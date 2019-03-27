@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
 using System.Diagnostics;
 using System.Globalization;
 using RuntimeTypeCache = System.RuntimeType.RuntimeTypeCache;
@@ -12,8 +13,8 @@ namespace System.Reflection
     {
         #region Private Data Members
         private int m_tkField;
-        private string m_name;
-        private RuntimeType m_fieldType;
+        private string? m_name;
+        private RuntimeType? m_fieldType;
         private FieldAttributes m_fieldAttributes;
         #endregion
 
@@ -29,11 +30,11 @@ namespace System.Reflection
         #endregion
 
         #region Internal Members
-        internal override bool CacheEquals(object o)
+        internal override bool CacheEquals(object? o)
         {
-            MdFieldInfo m = o as MdFieldInfo;
+            MdFieldInfo? m = o as MdFieldInfo;
 
-            if ((object)m == null)
+            if (m == null)
                 return false;
 
             return m.m_tkField == m_tkField &&
@@ -43,7 +44,7 @@ namespace System.Reflection
         #endregion
 
         #region MemberInfo Overrides
-        public override string Name
+        public override string? Name
         {
             get
             {
@@ -62,9 +63,9 @@ namespace System.Reflection
         public override RuntimeFieldHandle FieldHandle { get { throw new NotSupportedException(); } }
         public override FieldAttributes Attributes { get { return m_fieldAttributes; } }
 
-        public override bool IsSecurityCritical { get { return DeclaringType.IsSecurityCritical; } }
-        public override bool IsSecuritySafeCritical { get { return DeclaringType.IsSecuritySafeCritical; } }
-        public override bool IsSecurityTransparent { get { return DeclaringType.IsSecurityTransparent; } }
+        public override bool IsSecurityCritical { get { return DeclaringType!.IsSecurityCritical; } }
+        public override bool IsSecuritySafeCritical { get { return DeclaringType!.IsSecuritySafeCritical; } }
+        public override bool IsSecurityTransparent { get { return DeclaringType!.IsSecurityTransparent; } }
 
         [DebuggerStepThroughAttribute]
         [Diagnostics.DebuggerHidden]
@@ -82,7 +83,7 @@ namespace System.Reflection
 
         [DebuggerStepThroughAttribute]
         [Diagnostics.DebuggerHidden]
-        public override object GetValue(object obj)
+        public override object GetValue(object? obj)
         {
             return GetValue(false);
         }
@@ -103,7 +104,7 @@ namespace System.Reflection
 
         [DebuggerStepThroughAttribute]
         [Diagnostics.DebuggerHidden]
-        public override void SetValue(object obj, object value, BindingFlags invokeAttr, Binder binder, CultureInfo culture)
+        public override void SetValue(object obj, object value, BindingFlags invokeAttr, Binder? binder, CultureInfo? culture)
         {
             throw new FieldAccessException(SR.Acc_ReadOnly);
         }

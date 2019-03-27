@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
@@ -14,7 +15,7 @@ namespace System.Reflection
     {
         #region Private Data Members
         private int m_token;
-        private string m_name;
+        private string? m_name;
         private void* m_utf8name;
         private PropertyAttributes m_flags;
         private RuntimeTypeCache m_reflectedTypeCache;
@@ -23,8 +24,8 @@ namespace System.Reflection
         private MethodInfo[] m_otherMethod;
         private RuntimeType m_declaringType;
         private BindingFlags m_bindingFlags;
-        private Signature m_signature;
-        private ParameterInfo[] m_parameters;
+        private Signature? m_signature;
+        private ParameterInfo[]? m_parameters;
         #endregion
 
         #region Constructor
@@ -53,11 +54,11 @@ namespace System.Reflection
         #endregion
 
         #region Internal Members
-        internal override bool CacheEquals(object o)
+        internal override bool CacheEquals(object? o)
         {
-            RuntimePropertyInfo m = o as RuntimePropertyInfo;
+            RuntimePropertyInfo? m = o as RuntimePropertyInfo;
 
-            if ((object)m == null)
+            if (m is null)
                 return false;
 
             return m.m_token == m_token &&
@@ -110,7 +111,7 @@ namespace System.Reflection
             //             End Class
             //
 
-            Debug.Assert(Name.Equals(target.Name));
+            Debug.Assert(Name!.Equals(target.Name));
             Debug.Assert(this != target);
             Debug.Assert(this.ReflectedType == target.ReflectedType);
 
@@ -126,7 +127,7 @@ namespace System.Reflection
 
             sbName.Append(PropertyType.FormatTypeName());
             sbName.Append(' ');
-            sbName.Append(Name);
+            sbName.Append(Name!);
 
             RuntimeType[] arguments = Signature.Arguments;
             if (arguments.Length > 0)
@@ -151,7 +152,7 @@ namespace System.Reflection
             if (attributeType == null)
                 throw new ArgumentNullException(nameof(attributeType));
 
-            RuntimeType attributeRuntimeType = attributeType.UnderlyingSystemType as RuntimeType;
+            RuntimeType? attributeRuntimeType = attributeType.UnderlyingSystemType as RuntimeType;
 
             if (attributeRuntimeType == null)
                 throw new ArgumentException(SR.Arg_MustBeType, nameof(attributeType));
@@ -164,7 +165,7 @@ namespace System.Reflection
             if (attributeType == null)
                 throw new ArgumentNullException(nameof(attributeType));
 
-            RuntimeType attributeRuntimeType = attributeType.UnderlyingSystemType as RuntimeType;
+            RuntimeType? attributeRuntimeType = attributeType.UnderlyingSystemType as RuntimeType;
 
             if (attributeRuntimeType == null)
                 throw new ArgumentException(SR.Arg_MustBeType, nameof(attributeType));
@@ -180,7 +181,7 @@ namespace System.Reflection
 
         #region MemberInfo Overrides
         public override MemberTypes MemberType { get { return MemberTypes.Property; } }
-        public override string Name
+        public override string? Name
         {
             get
             {
@@ -190,7 +191,7 @@ namespace System.Reflection
                 return m_name;
             }
         }
-        public override Type DeclaringType
+        public override Type? DeclaringType
         {
             get
             {
@@ -200,7 +201,7 @@ namespace System.Reflection
 
         public sealed override bool HasSameMetadataDefinitionAs(MemberInfo other) => HasSameMetadataDefinitionAsCore<RuntimePropertyInfo>(other);
 
-        public override Type ReflectedType
+        public override Type? ReflectedType
         {
             get
             {
@@ -278,7 +279,7 @@ namespace System.Reflection
             get { return Signature.ReturnType; }
         }
 
-        public override MethodInfo GetGetMethod(bool nonPublic)
+        public override MethodInfo? GetGetMethod(bool nonPublic)
         {
             if (!Associates.IncludeAccessor(m_getterMethod, nonPublic))
                 return null;
@@ -286,7 +287,7 @@ namespace System.Reflection
             return m_getterMethod;
         }
 
-        public override MethodInfo GetSetMethod(bool nonPublic)
+        public override MethodInfo? GetSetMethod(bool nonPublic)
         {
             if (!Associates.IncludeAccessor(m_setterMethod, nonPublic))
                 return null;
@@ -318,10 +319,10 @@ namespace System.Reflection
             if (m_parameters == null)
             {
                 int numParams = 0;
-                ParameterInfo[] methParams = null;
+                ParameterInfo[] methParams = null!;
 
                 // First try to get the Get method.
-                MethodInfo m = GetGetMethod(true);
+                MethodInfo? m = GetGetMethod(true);
                 if (m != null)
                 {
                     // There is a Get method so use it.
@@ -382,7 +383,7 @@ namespace System.Reflection
         #region Dynamic
         [DebuggerStepThroughAttribute]
         [Diagnostics.DebuggerHidden]
-        public override object GetValue(object obj, object[] index)
+        public override object? GetValue(object? obj, object?[]? index)
         {
             return GetValue(obj, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static,
                 null, index, null);
@@ -390,9 +391,9 @@ namespace System.Reflection
 
         [DebuggerStepThroughAttribute]
         [Diagnostics.DebuggerHidden]
-        public override object GetValue(object obj, BindingFlags invokeAttr, Binder binder, object[] index, CultureInfo culture)
+        public override object? GetValue(object? obj, BindingFlags invokeAttr, Binder? binder, object?[]? index, CultureInfo? culture)
         {
-            MethodInfo m = GetGetMethod(true);
+            MethodInfo? m = GetGetMethod(true);
             if (m == null)
                 throw new ArgumentException(System.SR.Arg_GetMethNotFnd);
             return m.Invoke(obj, invokeAttr, binder, index, null);
@@ -400,7 +401,7 @@ namespace System.Reflection
 
         [DebuggerStepThroughAttribute]
         [Diagnostics.DebuggerHidden]
-        public override void SetValue(object obj, object value, object[] index)
+        public override void SetValue(object? obj, object? value, object[]? index)
         {
             SetValue(obj,
                     value,
@@ -412,14 +413,14 @@ namespace System.Reflection
 
         [DebuggerStepThroughAttribute]
         [Diagnostics.DebuggerHidden]
-        public override void SetValue(object obj, object value, BindingFlags invokeAttr, Binder binder, object[] index, CultureInfo culture)
+        public override void SetValue(object? obj, object? value, BindingFlags invokeAttr, Binder? binder, object[]? index, CultureInfo? culture)
         {
-            MethodInfo m = GetSetMethod(true);
+            MethodInfo? m = GetSetMethod(true);
 
             if (m == null)
                 throw new ArgumentException(System.SR.Arg_SetMethNotFnd);
 
-            object[] args = null;
+            object?[]? args = null;
 
             if (index != null)
             {

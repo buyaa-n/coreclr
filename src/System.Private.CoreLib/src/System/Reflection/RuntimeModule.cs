@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 using System.Collections.Generic;
@@ -41,7 +42,7 @@ namespace System.Reflection
         #endregion
 
         #region Module overrides
-        private static RuntimeTypeHandle[] ConvertToTypeHandleArray(Type[] genericArguments)
+        private static RuntimeTypeHandle[]? ConvertToTypeHandleArray(Type[]? genericArguments)
         {
             if (genericArguments == null)
                 return null;
@@ -89,7 +90,7 @@ namespace System.Reflection
             return sig;
         }
 
-        public override MethodBase ResolveMethod(int metadataToken, Type[] genericTypeArguments, Type[] genericMethodArguments)
+        public override MethodBase? ResolveMethod(int metadataToken, Type[]? genericTypeArguments, Type[]? genericMethodArguments)
         {
             MetadataToken tk = new MetadataToken(metadataToken);
 
@@ -97,8 +98,8 @@ namespace System.Reflection
                 throw new ArgumentOutOfRangeException(nameof(metadataToken),
                     SR.Format(SR.Argument_InvalidToken, tk, this));
 
-            RuntimeTypeHandle[] typeArgs = ConvertToTypeHandleArray(genericTypeArguments);
-            RuntimeTypeHandle[] methodArgs = ConvertToTypeHandleArray(genericMethodArguments);
+            RuntimeTypeHandle[]? typeArgs = ConvertToTypeHandleArray(genericTypeArguments);
+            RuntimeTypeHandle[]? methodArgs = ConvertToTypeHandleArray(genericMethodArguments);
 
             try
             {
@@ -139,7 +140,7 @@ namespace System.Reflection
             }
         }
 
-        private FieldInfo ResolveLiteralField(int metadataToken, Type[] genericTypeArguments, Type[] genericMethodArguments)
+        private FieldInfo? ResolveLiteralField(int metadataToken, Type[]? genericTypeArguments, Type[]? genericMethodArguments)
         {
             MetadataToken tk = new MetadataToken(metadataToken);
 
@@ -170,7 +171,7 @@ namespace System.Reflection
             }
         }
 
-        public override FieldInfo ResolveField(int metadataToken, Type[] genericTypeArguments, Type[] genericMethodArguments)
+        public override FieldInfo? ResolveField(int metadataToken, Type[]? genericTypeArguments, Type[]? genericMethodArguments)
         {
             MetadataToken tk = new MetadataToken(metadataToken);
 
@@ -178,12 +179,12 @@ namespace System.Reflection
                 throw new ArgumentOutOfRangeException(nameof(metadataToken),
                     SR.Format(SR.Argument_InvalidToken, tk, this));
 
-            RuntimeTypeHandle[] typeArgs = ConvertToTypeHandleArray(genericTypeArguments);
-            RuntimeTypeHandle[] methodArgs = ConvertToTypeHandleArray(genericMethodArguments);
+            RuntimeTypeHandle[]? typeArgs = ConvertToTypeHandleArray(genericTypeArguments);
+            RuntimeTypeHandle[]? methodArgs = ConvertToTypeHandleArray(genericMethodArguments);
 
             try
             {
-                IRuntimeFieldInfo fieldHandle = null;
+                IRuntimeFieldInfo fieldHandle;
 
                 if (!tk.IsFieldDef)
                 {
@@ -224,7 +225,7 @@ namespace System.Reflection
             }
         }
 
-        public override Type ResolveType(int metadataToken, Type[] genericTypeArguments, Type[] genericMethodArguments)
+        public override Type ResolveType(int metadataToken, Type[]? genericTypeArguments, Type[]? genericMethodArguments)
         {
             MetadataToken tk = new MetadataToken(metadataToken);
 
@@ -238,8 +239,8 @@ namespace System.Reflection
             if (!tk.IsTypeDef && !tk.IsTypeSpec && !tk.IsTypeRef)
                 throw new ArgumentException(SR.Format(SR.Argument_ResolveType, tk, this), nameof(metadataToken));
 
-            RuntimeTypeHandle[] typeArgs = ConvertToTypeHandleArray(genericTypeArguments);
-            RuntimeTypeHandle[] methodArgs = ConvertToTypeHandleArray(genericMethodArguments);
+            RuntimeTypeHandle[]? typeArgs = ConvertToTypeHandleArray(genericTypeArguments);
+            RuntimeTypeHandle[]? methodArgs = ConvertToTypeHandleArray(genericMethodArguments);
 
             try
             {
@@ -256,7 +257,7 @@ namespace System.Reflection
             }
         }
 
-        public override MemberInfo ResolveMember(int metadataToken, Type[] genericTypeArguments, Type[] genericMethodArguments)
+        public override MemberInfo? ResolveMember(int metadataToken, Type[]? genericTypeArguments, Type[]? genericMethodArguments)
         {
             MetadataToken tk = new MetadataToken(metadataToken);
 
@@ -337,8 +338,8 @@ namespace System.Reflection
         #region Data Members
 #pragma warning disable 169
         // If you add any data members, you need to update the native declaration ReflectModuleBaseObject.
-        private RuntimeType m_runtimeType;
-        private RuntimeAssembly m_runtimeAssembly;
+        private RuntimeType? m_runtimeType;
+        private RuntimeAssembly? m_runtimeAssembly;
         private IntPtr m_pRefClass;
         private IntPtr m_pData;
         private IntPtr m_pGlobals;
@@ -347,14 +348,14 @@ namespace System.Reflection
         #endregion
 
         #region Protected Virtuals
-        protected override MethodInfo GetMethodImpl(string name, BindingFlags bindingAttr, Binder binder,
-            CallingConventions callConvention, Type[] types, ParameterModifier[] modifiers)
+        protected override MethodInfo? GetMethodImpl(string name, BindingFlags bindingAttr, Binder? binder,
+            CallingConventions callConvention, Type[]? types, ParameterModifier[]? modifiers)
         {
             return GetMethodInternal(name, bindingAttr, binder, callConvention, types, modifiers);
         }
 
-        internal MethodInfo GetMethodInternal(string name, BindingFlags bindingAttr, Binder binder,
-            CallingConventions callConvention, Type[] types, ParameterModifier[] modifiers)
+        internal MethodInfo? GetMethodInternal(string name, BindingFlags bindingAttr, Binder? binder,
+            CallingConventions callConvention, Type[]? types, ParameterModifier[]? modifiers)
         {
             if (RuntimeType == null)
                 return null;
@@ -410,7 +411,7 @@ namespace System.Reflection
             if (attributeType == null)
                 throw new ArgumentNullException(nameof(attributeType));
 
-            RuntimeType attributeRuntimeType = attributeType.UnderlyingSystemType as RuntimeType;
+            RuntimeType? attributeRuntimeType = attributeType.UnderlyingSystemType as RuntimeType;
 
             if (attributeRuntimeType == null)
                 throw new ArgumentException(SR.Arg_MustBeType, nameof(attributeType));
@@ -423,7 +424,7 @@ namespace System.Reflection
             if (attributeType == null)
                 throw new ArgumentNullException(nameof(attributeType));
 
-            RuntimeType attributeRuntimeType = attributeType.UnderlyingSystemType as RuntimeType;
+            RuntimeType? attributeRuntimeType = attributeType.UnderlyingSystemType as RuntimeType;
 
             if (attributeRuntimeType == null)
                 throw new ArgumentException(SR.Arg_MustBeType, nameof(attributeType));
@@ -438,19 +439,19 @@ namespace System.Reflection
         #endregion
 
         #region Public Virtuals
-        public override void GetObjectData(SerializationInfo info, StreamingContext context)
+        public override void GetObjectData(SerializationInfo? info, StreamingContext context)
         {
             throw new PlatformNotSupportedException();
         }
 
-        public override Type GetType(string className, bool throwOnError, bool ignoreCase)
+        public override Type? GetType(string className, bool throwOnError, bool ignoreCase)
         {
             // throw on null strings regardless of the value of "throwOnError"
             if (className == null)
                 throw new ArgumentNullException(nameof(className));
 
-            RuntimeType retType = null;
-            object keepAlive = null;
+            RuntimeType? retType = null;
+            object? keepAlive = null;
             GetType(GetNativeHandle(), className, throwOnError, ignoreCase, JitHelpers.GetObjectHandleOnStack(ref retType), JitHelpers.GetObjectHandleOnStack(ref keepAlive));
             GC.KeepAlive(keepAlive);
             return retType;
@@ -458,7 +459,7 @@ namespace System.Reflection
 
         internal string GetFullyQualifiedName()
         {
-            string fullyQualifiedName = null;
+            string fullyQualifiedName = null!;
             GetFullyQualifiedName(GetNativeHandle(), JitHelpers.GetStringHandleOnStack(ref fullyQualifiedName));
             return fullyQualifiedName;
         }
@@ -514,7 +515,7 @@ namespace System.Reflection
             return RuntimeType.GetFields(bindingFlags);
         }
 
-        public override FieldInfo GetField(string name, BindingFlags bindingAttr)
+        public override FieldInfo? GetField(string name, BindingFlags bindingAttr)
         {
             if (name == null)
                 throw new ArgumentNullException(nameof(name));
@@ -537,7 +538,7 @@ namespace System.Reflection
         {
             get
             {
-                string scopeName = null;
+                string scopeName = null!;
                 GetScopeName(GetNativeHandle(), JitHelpers.GetStringHandleOnStack(ref scopeName));
                 return scopeName;
             }
@@ -571,7 +572,7 @@ namespace System.Reflection
 
         internal RuntimeAssembly GetRuntimeAssembly()
         {
-            return m_runtimeAssembly;
+            return m_runtimeAssembly!;
         }
 
         protected override ModuleHandle GetModuleHandleImpl()

@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+using System.Diagnostics;
 using System.Globalization;
 
 namespace System.Reflection.Emit
@@ -14,7 +16,7 @@ namespace System.Reflection.Emit
         #region Constructor
 
         internal ConstructorBuilder(string name, MethodAttributes attributes, CallingConventions callingConvention,
-            Type[] parameterTypes, Type[][] requiredCustomModifiers, Type[][] optionalCustomModifiers, ModuleBuilder mod, TypeBuilder type)
+            Type[]? parameterTypes, Type[][]? requiredCustomModifiers, Type[][]? optionalCustomModifiers, ModuleBuilder mod, TypeBuilder type)
         {
             int sigLength;
             byte[] sigBytes;
@@ -31,7 +33,7 @@ namespace System.Reflection.Emit
         }
 
         internal ConstructorBuilder(string name, MethodAttributes attributes, CallingConventions callingConvention,
-            Type[] parameterTypes, ModuleBuilder mod, TypeBuilder type) :
+            Type[]? parameterTypes, ModuleBuilder mod, TypeBuilder type) :
             this(name, attributes, callingConvention, parameterTypes, null, null, mod, type)
         {
         }
@@ -69,17 +71,17 @@ namespace System.Reflection.Emit
             get { return m_methodBuilder.Module; }
         }
 
-        public override Type ReflectedType
+        public override Type? ReflectedType
         {
             get { return m_methodBuilder.ReflectedType; }
         }
 
-        public override Type DeclaringType
+        public override Type? DeclaringType
         {
             get { return m_methodBuilder.DeclaringType; }
         }
 
-        public override string Name
+        public override string? Name
         {
             get { return m_methodBuilder.Name; }
         }
@@ -87,15 +89,15 @@ namespace System.Reflection.Emit
         #endregion
 
         #region MethodBase Overrides
-        public override object Invoke(object obj, BindingFlags invokeAttr, Binder binder, object[] parameters, CultureInfo culture)
+        public override object Invoke(object? obj, BindingFlags invokeAttr, Binder? binder, object?[]? parameters, CultureInfo? culture)
         {
             throw new NotSupportedException(SR.NotSupported_DynamicModule);
         }
 
-        public override ParameterInfo[] GetParameters()
+        public override ParameterInfo[]? GetParameters()
         {
-            ConstructorInfo rci = GetTypeBuilder().GetConstructor(m_methodBuilder.m_parameterTypes);
-            return rci.GetParameters();
+            ConstructorInfo? rci = GetTypeBuilder().GetConstructor(m_methodBuilder.GetParameterTypes());
+            return rci?.GetParameters();
         }
 
         public override MethodAttributes Attributes
@@ -116,7 +118,7 @@ namespace System.Reflection.Emit
         #endregion
 
         #region ConstructorInfo Overrides
-        public override object Invoke(BindingFlags invokeAttr, Binder binder, object[] parameters, CultureInfo culture)
+        public override object Invoke(BindingFlags invokeAttr, Binder? binder, object?[]? parameters, CultureInfo? culture)
         {
             throw new NotSupportedException(SR.NotSupported_DynamicModule);
         }
@@ -147,7 +149,7 @@ namespace System.Reflection.Emit
             return m_methodBuilder.GetToken();
         }
 
-        public ParameterBuilder DefineParameter(int iSequence, ParameterAttributes attributes, string strParamName)
+        public ParameterBuilder DefineParameter(int iSequence, ParameterAttributes attributes, string? strParamName)
         {
             // Theoretically we shouldn't allow iSequence to be 0 because in reflection ctors don't have 
             // return parameters. But we'll allow it for backward compatibility with V2. The attributes 
@@ -178,6 +180,8 @@ namespace System.Reflection.Emit
         {
             get
             {
+                Debug.Assert(DeclaringType != null);
+
                 if (DeclaringType.IsGenericType)
                     return CallingConventions.HasThis;
 
@@ -191,7 +195,7 @@ namespace System.Reflection.Emit
         }
 
         // This always returns null. Is that what we want?
-        internal override Type GetReturnType()
+        internal override Type? GetReturnType()
         {
             return m_methodBuilder.ReturnType;
         }
